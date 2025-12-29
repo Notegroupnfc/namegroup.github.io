@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Đang chuyển hướng...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+  <h2>📡 Đang xử lý NFC...</h2>
+  <p id="message">Vui lòng chờ...</p>
+
+  <script>
+    async function handleNFC() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+      const source = params.get("source") || "web";
+
+      if (!id) {
+        document.getElementById("message").innerText = "❌ Không có ID NFC";
+        return;
+      }
+
+      // Thay YOUR_WEB_APP_URL bằng URL Web App bạn deploy
+      const API = "AKfycbyfHMkSttksbctIb71APA9SS4SWe9fasZRN6eSUN6920B81xVo5tNxE1jK7IAeaDjdh0w"
+        + "?id=" + encodeURIComponent(id)
+        + "&source=" + encodeURIComponent(source)
+        + "&ua=" + encodeURIComponent(navigator.userAgent);
+
+      try {
+        document.getElementById("message").innerText = "🔗 Gửi yêu cầu tới server...";
+        const res = await fetch(API);
+        const data = await res.json();
+
+        if (data.LINKS) {
+          document.getElementById("message").innerText =
+            `🔀 Chuyển tới ${data.LINKS}`;
+
+          // Redirect sau 1 giây
+          setTimeout(() => {
+            window.location.href = data.LINKS;
+          }, 800);
+        } else {
+          document.getElementById("message").innerText =
+            "⚠️ Không tìm thấy ID: " + id;
+        }
+      } catch (err) {
+        document.getElementById("message").innerText =
+          "❌ Lỗi khi gọi API";
+        console.error(err);
+      }
+    }
+
+    handleNFC();
+  </script>
+</body>
+</html>
