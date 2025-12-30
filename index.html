@@ -17,7 +17,7 @@
       document.getElementById("status").innerText = "❌ Thiếu ID";
     } else {
       // 🔴 DÁN URL WEB APP CỦA BẠN VÀO ĐÂY
-      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpFhKmMGzn6DYa79hEmM_-5cD13a7GLeSbtBaFtW66XozR22T-PtFu5TXgD9e_6_f4Kw/exec";
+      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmor-6GTvwsxug6ePq741esxa7RDO5_86EqJ6svn1PytSOnm6DeeD9hJfd2_On7YWrqQ/exec";
 
       fetch(`${SCRIPT_URL}?id=${encodeURIComponent(id)}`)
         .then(res => res.text())
