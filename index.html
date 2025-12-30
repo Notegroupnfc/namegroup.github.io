@@ -4,44 +4,48 @@
 <meta charset="UTF-8">
 <title>NFC Quét Log</title>
 <style>
-body { font-family: Arial; margin: 20px; }
-#status { font-weight: bold; color: green; }
-#info { margin-top: 10px; font-size: 16px; }
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  #status { font-weight: bold; color: green; }
+  #info { margin-top: 10px; font-size: 16px; }
 </style>
 </head>
 <body>
+
 <h2>NFC Quét Log</h2>
-<div id="status">Đang quét...</div>
+<div id="status">Đang quét…</div>
 <div id="info"></div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(location.search);
 const id = params.get("id");
-const GAS_URL = "https://script.google.com/macros/s/AKfycbws-FtOPJ6tcynhNhOgO-NvEOma0zoUTVD0-9cBn9VN3mGZ5SLTYyfVpORbpLjrMV2Beg/exec"; // Web App URL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyosv1kd28rOsG65plTEkES-FWz-jwyE4YgtIYZW4to6an9n5fRHwUgB1fF7Ta9s6kD9Q/exec"; // Web App URL
 
 if (!id) {
   document.getElementById("status").innerText = "❌ Thiếu ID NFC";
 } else {
-  fetch(`${GAS_URL}?id=${encodeURIComponent(id)}&source=nfc`, { cache: "no-store" })
-    .then(r => r.json())
-    .then(res => {
-      // Hiển thị thông tin tạm thời (~0.3s)
-      document.getElementById("status").innerText = res.message;
-      document.getElementById("info").innerHTML = `
-        🏢 <b>Tòa:</b> ${res.ten_toa || ""}<br>
-        📍 <b>Quận:</b> ${res.quan || ""}<br>
-        🧱 <b>Tầng:</b> ${res.tang || ""}
-      `;
+  fetch(`${GAS_URL}?id=${encodeURIComponent(id)}&source=nfc`, {
+    cache: "no-store"
+  })
+  .then(r => r.json())
+  .then(res => {
+    // Hiển thị thông tin ngay ~0.3s
+    document.getElementById("status").innerText = res.message;
+    document.getElementById("info").innerHTML = `
+      🏢 <b>Tòa:</b> ${res.ten_toa || ""}<br>
+      📍 <b>Quận:</b> ${res.quan || ""}<br>
+      🧱 <b>Tầng:</b> ${res.tang || ""}
+    `;
 
-      // Mở link sau 0.8s → tổng quét + log + open ~1.5s
-      setTimeout(() => {
-        if (res.link) window.location.href = res.link;
-      }, 800);
-    })
-    .catch(() => {
-      document.getElementById("status").innerText = "❌ Lỗi kết nối";
-    });
+    // Tự mở link đúng từ sheet sau ~0.8s
+    setTimeout(() => {
+      if (res.link) window.location.href = res.link;
+    }, 800);
+  })
+  .catch(() => {
+    document.getElementById("status").innerText = "❌ Lỗi kết nối";
+  });
 }
 </script>
+
 </body>
 </html>
