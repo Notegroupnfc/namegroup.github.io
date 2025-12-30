@@ -1,47 +1,37 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>NFC Logging</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <script>
-    function getParam(name) {
-      const url = new URL(window.location.href);
-      return url.searchParams.get(name);
-    }
-
-    window.onload = function () {
-      const id = getParam("id");
-
-      if (!id) {
-        document.getElementById("msg").innerText = "❌ Thiếu ID NFC";
-        return;
-      }
-
-      const scriptURL = "https://script.google.com/macros/s/AKfycbxMFWmkDLc3Ly-MPJfwUwjBR2Ir3NqX33qCXH87yiJUCM0060ZagE9aMm5DWLarc1NkiQ/exec";
-
-      fetch(`${scriptURL}?id=${encodeURIComponent(id)}`)
-        .then(res => res.text())
-        .then(txt => {
-          document.getElementById("msg").innerText = "✅ Ghi nhận NFC thành công";
-        })
-        .catch(err => {
-          document.getElementById("msg").innerText = "❌ Lỗi ghi log";
-        });
-    };
-  </script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding-top: 50px;
-    }
-  </style>
+  <meta charset="utf-8">
+  <title>NFC Logger</title>
 </head>
-
 <body>
-  <h2 id="msg">⏳ Đang xử lý NFC...</h2>
+<h3>Đang ghi nhận NFC...</h3>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+
+const id = params.get("id");
+const ten_toa = params.get("ten_toa");
+const quan = params.get("quan");
+
+if (id) {
+  const url =
+    "https://script.google.com/macros/s/AKfycbw-Bx5XAn1K-uwjL184yY8786OLyEUpn_6dlfEIwbgg9IeYaU2Th5WwzxcGa6GKo13Mkg/exec" +
+    "?id=" + encodeURIComponent(id) +
+    "&ten_toa=" + encodeURIComponent(ten_toa || "") +
+    "&quan=" + encodeURIComponent(quan || "");
+
+  fetch(url)
+    .then(r => r.text())
+    .then(() => {
+      document.body.innerHTML = "<h2>✅ Ghi nhận log thành công</h2>";
+    })
+    .catch(() => {
+      document.body.innerHTML = "<h2>❌ Lỗi ghi log</h2>";
+    });
+} else {
+  document.body.innerHTML = "<h2>❌ Thiếu ID</h2>";
+}
+</script>
 </body>
 </html>
