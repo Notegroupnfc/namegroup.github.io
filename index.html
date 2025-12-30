@@ -1,52 +1,47 @@
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyGCbIJX6nEcqEcZTcN7hPg3MihjrfS9Q13U7Sv-G3ktp4uc0gIWHjcUpn8NLDz9Zvuuw/exec";
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>NFC Logging</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+  <script>
+    function getParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
 
-const statusEl = document.getElementById("status");
-const idTextEl = document.getElementById("idText");
+    window.onload = function () {
+      const id = getParam("id");
 
-if (!id) {
-  statusEl.textContent = "❌ Không có ID NFC";
-  statusEl.className = "err";
-} else {
-  idTextEl.textContent = "ID: " + id;
-
-  fetch(API_URL + "?id=" + encodeURIComponent(id))
-    .then(res => res.json())
-    .then(data => {
-
-      if (data.status === "OK") {
-        statusEl.innerHTML =
-          "✅ <b>" + data.ten_toa_nha + "</b><br>" +
-          "📍 " + data.quan + " – Tầng " + data.tang;
-
-        statusEl.className = "ok";
-
-        // ⏳ Redirect sau 2 giây
-        if (data.links) {
-          setTimeout(() => {
-            window.location.href = data.links;
-          }, 2000);
-        }
-
-      } else if (data.status === "DUPLICATE_BLOCKED") {
-        statusEl.textContent = "⏳ Đã quét gần đây, vui lòng chờ";
-        statusEl.className = "warn";
-
-      } else if (data.status === "ID_NOT_FOUND") {
-        statusEl.textContent = "❌ ID không tồn tại";
-        statusEl.className = "err";
-
-      } else {
-        statusEl.textContent = "❌ Lỗi: " + data.status;
-        statusEl.className = "err";
+      if (!id) {
+        document.getElementById("msg").innerText = "❌ Thiếu ID NFC";
+        return;
       }
-    })
-    .catch(() => {
-      statusEl.textContent = "❌ Lỗi kết nối hệ thống";
-      statusEl.className = "err";
-    });
-}
-</script>
+
+      const scriptURL = "https://script.google.com/macros/s/AKfycby27dbNJL83zeBgltJm1BpZk0-eZ90PpOJ5OFXTyaxU4ShQGhh6gnQe4bY7x5-1IFbMxA/exec";
+
+      fetch(`${scriptURL}?id=${encodeURIComponent(id)}`)
+        .then(res => res.text())
+        .then(txt => {
+          document.getElementById("msg").innerText = "✅ Ghi nhận NFC thành công";
+        })
+        .catch(err => {
+          document.getElementById("msg").innerText = "❌ Lỗi ghi log";
+        });
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 50px;
+    }
+  </style>
+</head>
+
+<body>
+  <h2 id="msg">⏳ Đang xử lý NFC...</h2>
+</body>
+</html>
