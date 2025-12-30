@@ -1,37 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>NFC Logger</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-<h3>Đang ghi nhận NFC...</h3>
+  <h3 id="status">Đang xử lý...</h3>
 
-<script>
-const params = new URLSearchParams(window.location.search);
+  <script>
+    // Lấy ID từ URL
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
 
-const id = params.get("id");
-const ten_toa = params.get("ten_toa");
-const quan = params.get("quan");
+    if (!id) {
+      document.getElementById("status").innerText = "❌ Thiếu ID";
+    } else {
+      // 🔴 DÁN URL WEB APP CỦA BẠN VÀO ĐÂY
+      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpFhKmMGzn6DYa79hEmM_-5cD13a7GLeSbtBaFtW66XozR22T-PtFu5TXgD9e_6_f4Kw/exec";
 
-if (id) {
-  const url =
-    "https://script.google.com/macros/s/AKfycbxdOSMWLYg_MyQAK0BrMZDAyu7Hh15bqNKfqFwSZYNp3mvlO8ZSjpAAt6uve3nF5XM1/exec" +
-    "?id=" + encodeURIComponent(id) +
-    "&ten_toa=" + encodeURIComponent(ten_toa || "") +
-    "&quan=" + encodeURIComponent(quan || "");
-
-  fetch(url)
-    .then(r => r.text())
-    .then(() => {
-      document.body.innerHTML = "<h2>✅ Ghi nhận log thành công</h2>";
-    })
-    .catch(() => {
-      document.body.innerHTML = "<h2>❌ Lỗi ghi log</h2>";
-    });
-} else {
-  document.body.innerHTML = "<h2>❌ Thiếu ID</h2>";
-}
-</script>
-</body>
-</html>
+      fetch(`${SCRIPT_URL}?id=${encodeURIComponent(id)}`)
+        .then(res => res.text())
+        .then(text => {
+          document.getElementById("status").innerText = text;
+        })
+        .catch(err => {
+          document.getElementById("status").innerText = "❌ Lỗi ghi log";
+          console.error(err);
+        });
+    }
+  </script>
+</b
