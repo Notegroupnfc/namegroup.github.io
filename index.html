@@ -7,7 +7,7 @@ const id = params.get("id");
 if (!id) {
   document.getElementById("status").innerText = "❌ Không có ID";
 } else {
-  fetch("https://script.google.com/macros/s/AKfycbXXXX/exec?id=" + encodeURIComponent(id))
+  fetch("https://script.google.com/macros/s/AKfycbwelfhlkWt_L9vOyxVaTGlHvqb5fh5GmHM4TQr0q7fqheSxv0R1QAuIgUXQghIftnSUxw/exec?id=" + encodeURIComponent(id))
     .then(r => r.text())
     .then(res => {
       const el = document.getElementById("status");
