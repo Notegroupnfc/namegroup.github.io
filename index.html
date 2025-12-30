@@ -1,48 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>NFC Quét Log</title>
-<style>
-body { font-family: Arial, sans-serif; margin: 20px; }
-#status { font-weight: bold; color: green; }
-#info { margin-top: 10px; font-size: 16px; }
-</style>
+  <meta charset="UTF-8">
+  <title>NFC Quét Log</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #info { margin-top: 15px; font-size: 18px; }
+    #status { font-weight: bold; }
+  </style>
 </head>
 <body>
+  <h2>NFC Quét Log</h2>
+  <div id="status">Đang quét...</div>
+  <div id="info"></div>
 
-<h2>NFC Quét Log</h2>
-<div id="status">Đang quét…</div>
-<div id="info"></div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
 
-<script>
-const params = new URLSearchParams(location.search);
-const id = params.get("id");
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyUUi_PRAzGrC-oD7iVPPSEoiSKnZ7-SFfnLUZ-EZ70YBg9BNCJsPpeM_R7Hj25a1Exug/exec"; // Thay bằng Web App /exec
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxYuT_KJZb_4tpLd0kPexBLKD9zkWVi3kbFVfAKo_oCA6dF0EZej040RU3O2T61fTm0FA/exec";
 
-if (!id) {
-  document.getElementById("status").innerText = "❌ Thiếu ID NFC";
-} else {
-  fetch(`${GAS_URL}?id=${encodeURIComponent(id)}&source=nfc`, { cache: "no-store" })
-  .then(r => r.json())
-  .then(res => {
-    document.getElementById("status").innerText = res.message;
-    document.getElementById("info").innerHTML = `
-      🏢 <b>Tòa:</b> ${res.ten_toa || ""}<br>
-      📍 <b>Quận:</b> ${res.quan || ""}<br>
-      🧱 <b>Tầng:</b> ${res.tang || ""}
-    `;
-
-    // Tự mở link đúng sau 1s
-    setTimeout(() => {
-      if (res.link) window.location.href = res.link;
-    }, 1000);
-  })
-  .catch(() => {
-    document.getElementById("status").innerText = "❌ Lỗi kết nối";
-  });
-}
-</script>
-
+    if (!id) {
+      document.getElementById("status").innerText = "❌ Thiếu ID NFC";
+    } else {
+      fetch(`${GAS_URL}?id=${encodeURIComponent(id)}&source=nfc`)
+        .then(r => r.json())
+        .then(res => {
+          document.getElementById("status").innerText = res.message;
+          if (res.ten_toa) {
+            document.getElementById("info").innerHTML = `
+              🏢 <b>Tòa:</b> ${res.ten_toa}<br>
+              📍 <b>Quận:</b> ${res.quan}<br>
+              🧱 <b>Tầng:</b> ${res.tang}<br>
+              🔗 <b>Link NFC:</b> ${res.link}
+            `;
+            setTimeout(() => {
+              if (res.link) window.location.href = res.link; // tự mở link chính xác
+            }, 3000);
+          }
+        })
+        .catch(() => document.getElementById("status").innerText = "❌ Lỗi kết nối");
+    }
+  </script>
 </body>
 </html>
