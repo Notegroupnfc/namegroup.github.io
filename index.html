@@ -1,29 +1,52 @@
-<h2 id="status">Đang xử lý NFC...</h2>
-
 <script>
+const API_URL = "https://script.google.com/macros/s/AKfycbyGCbIJX6nEcqEcZTcN7hPg3MihjrfS9Q13U7Sv-G3ktp4uc0gIWHjcUpn8NLDz9Zvuuw/exec";
+
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
-if (!id) {
-  document.getElementById("status").innerText = "❌ Không có ID";
-} else {
-  fetch("https://script.google.com/macros/s/AKfycbwelfhlkWt_L9vOyxVaTGlHvqb5fh5GmHM4TQr0q7fqheSxv0R1QAuIgUXQghIftnSUxw/exec?id=" + encodeURIComponent(id))
-    .then(r => r.text())
-    .then(res => {
-      const el = document.getElementById("status");
+const statusEl = document.getElementById("status");
+const idTextEl = document.getElementById("idText");
 
-      if (res === "OK") {
-        el.innerText = "✅ Quét thành công";
-        el.style.color = "green";
-      } else if (res === "DUPLICATE_BLOCKED") {
-        el.innerText = "⏳ Đã quét gần đây – vui lòng chờ";
-        el.style.color = "orange";
-      } else if (res === "ID_NOT_FOUND") {
-        el.innerText = "❌ ID không tồn tại";
-        el.style.color = "red";
+if (!id) {
+  statusEl.textContent = "❌ Không có ID NFC";
+  statusEl.className = "err";
+} else {
+  idTextEl.textContent = "ID: " + id;
+
+  fetch(API_URL + "?id=" + encodeURIComponent(id))
+    .then(res => res.json())
+    .then(data => {
+
+      if (data.status === "OK") {
+        statusEl.innerHTML =
+          "✅ <b>" + data.ten_toa_nha + "</b><br>" +
+          "📍 " + data.quan + " – Tầng " + data.tang;
+
+        statusEl.className = "ok";
+
+        // ⏳ Redirect sau 2 giây
+        if (data.links) {
+          setTimeout(() => {
+            window.location.href = data.links;
+          }, 2000);
+        }
+
+      } else if (data.status === "DUPLICATE_BLOCKED") {
+        statusEl.textContent = "⏳ Đã quét gần đây, vui lòng chờ";
+        statusEl.className = "warn";
+
+      } else if (data.status === "ID_NOT_FOUND") {
+        statusEl.textContent = "❌ ID không tồn tại";
+        statusEl.className = "err";
+
       } else {
-        el.innerText = res;
+        statusEl.textContent = "❌ Lỗi: " + data.status;
+        statusEl.className = "err";
       }
+    })
+    .catch(() => {
+      statusEl.textContent = "❌ Lỗi kết nối hệ thống";
+      statusEl.className = "err";
     });
 }
 </script>
