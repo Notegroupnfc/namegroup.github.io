@@ -1,26 +1,37 @@
-<script>
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id"); // lấy ID từ URL
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>NFC Quét Log</title>
+</head>
+<body>
+  <h2>NFC Quét Log</h2>
+  <div id="status">Đang chờ quét...</div>
+  <div id="info"></div>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzJnnguWI4KtL2DRcI_-R-89zX2TVjQJ1Oeh2QPww8Ky0zBY8nlxFgVqhArco10ztMGXg/exec"; // sửa WEB_APP_ID
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id"); // Lấy ID từ URL
 
-if (!id) {
-  document.getElementById("status").innerText = "❌ Thiếu ID NFC";
-} else {
-  fetch(`${GAS_URL}?id=${encodeURIComponent(id)}&source=nfc`)
-    .then(r => r.json())
-    .then(res => {
-      document.getElementById("status").innerText = res.message;
-      if (res.ten_toa) {
-        document.getElementById("info").innerHTML = `
-          🏢 <b>Tòa:</b> ${res.ten_toa}<br>
-          📍 <b>Quận:</b> ${res.quan}<br>
-          🧱 <b>Tầng:</b> ${res.tang}
-        `;
-      }
-    })
-    .catch(() => {
-      document.getElementById("status").innerText = "❌ Lỗi kết nối";
-    });
-}
-</script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyu_ECpt9H1vjbluj8IjH1ENtUW6LrqB7qpqEh-NK7FseNtE1j2PMCp40g99b8AgFhAdw/exec";
+
+    if (!id) {
+      document.getElementById("status").innerText = "❌ Thiếu ID NFC";
+    } else {
+      fetch(`${GAS_URL}?id=${encodeURIComponent(id)}&source=nfc`)
+        .then(r => r.json())
+        .then(res => {
+          document.getElementById("status").innerText = res.message;
+          if (res.ten_toa) {
+            document.getElementById("info").innerHTML = `
+              🏢 <b>Tòa:</b> ${res.ten_toa}<br>
+              📍 <b>Quận:</b> ${res.quan}<br>
+              🧱 <b>Tầng:</b> ${res.tang}
+            `;
+          }
+        })
+        .catch(() => document.getElementById("status").innerText = "❌ Lỗi kết nối");
+    }
+  </script>
+</body>
+</html>
