@@ -5,20 +5,21 @@
   <title>NFC Quét Log</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
-    #info { margin-top: 15px; font-size: 18px; }
-    #status { font-weight: bold; }
+    #status { font-weight: bold; color: green; font-size: 20px; }
+    #info { margin-top: 10px; font-size: 18px; }
+    #countdown { margin-top: 10px; font-size: 16px; color: blue; }
   </style>
 </head>
 <body>
   <h2>NFC Quét Log</h2>
   <div id="status">Đang quét...</div>
   <div id="info"></div>
+  <div id="countdown"></div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
-
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzukfVS7goHAeAfr12_7HfXCmIIDGLAPENKDhPlnBoFYrhYNw_bz8kUsEUgJD6yU0Rmkg/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwV5rq825afaW7PKLPk3tpqnZQmIlcTGyWtX61Jm7jdC7u6mp1ABhd8zXTD7uoGxQtm/exec"; // Web App URL
 
     if (!id) {
       document.getElementById("status").innerText = "❌ Thiếu ID NFC";
@@ -26,18 +27,26 @@
       fetch(`${GAS_URL}?id=${encodeURIComponent(id)}&source=nfc`)
         .then(r => r.json())
         .then(res => {
+          // Hiển thị thông tin tạm thời
           document.getElementById("status").innerText = res.message;
-          if (res.ten_toa) {
-            document.getElementById("info").innerHTML = `
-              🏢 <b>Tòa:</b> ${res.ten_toa}<br>
-              📍 <b>Quận:</b> ${res.quan}<br>
-              🧱 <b>Tầng:</b> ${res.tang}<br>
-              🔗 <b>Link NFC:</b> ${res.link}
-            `;
-            setTimeout(() => {
-              if (res.link) window.location.href = res.link; // tự mở link chính xác
-            }, 3000);
-          }
+          document.getElementById("info").innerHTML = `
+            🏢 <b>Tòa:</b> ${res.ten_toa}<br>
+            📍 <b>Quận:</b> ${res.quan}<br>
+            🧱 <b>Tầng:</b> ${res.tang}<br>
+            🔗 <b>Link NFC:</b> ${res.link}
+          `;
+
+          // Countdown 0.5s trước khi mở link
+          let timeLeft = 0.5; // giây
+          const countdownEl = document.getElementById("countdown");
+          const interval = setInterval(() => {
+            countdownEl.innerText = `🔄 Mở link sau ${timeLeft.toFixed(1)}s`;
+            timeLeft -= 0.1;
+            if (timeLeft <= 0) {
+              clearInterval(interval);
+              if (res.link) window.location.href = res.link; // mở link
+            }
+          }, 50); // cập nhật mỗi 50ms (~0.1s)
         })
         .catch(() => document.getElementById("status").innerText = "❌ Lỗi kết nối");
     }
