@@ -8,12 +8,13 @@
   <h2>NFC Quét Log</h2>
   <div id="status">Đang chờ quét...</div>
   <div id="info"></div>
+  <div id="link"></div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id"); // Lấy ID từ URL
 
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzWzt7NksEB9FIAOqYuEUPRjS-FIwAIUrU5NkC1YKvoDbJNtQQ_22345J9AgTIsg3nsYg/exec"; // Web App URL
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzcvCWgBFB_o9xf3-Ul1g0OgIMIS-T2NcWHIGdJX9f_kmy16MnS1GZYya9-6FHHpfAtGw/exec"; // Web App URL
 
     if (!id) {
       document.getElementById("status").innerText = "❌ Thiếu ID NFC";
@@ -28,6 +29,7 @@
               📍 <b>Quận:</b> ${res.quan}<br>
               🧱 <b>Tầng:</b> ${res.tang}
             `;
+            document.getElementById("link").innerHTML = `<a href="${res.link}" target="_blank">🔗 Mở link NFC</a>`;
           }
         })
         .catch(() => document.getElementById("status").innerText = "❌ Lỗi kết nối");
