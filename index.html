@@ -1,33 +1,26 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <title>NFC Logger</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-  <h3 id="status">Đang xử lý...</h3>
+<script>
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id"); // lấy ID từ URL
 
-  <script>
-    // Lấy ID từ URL
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzJnnguWI4KtL2DRcI_-R-89zX2TVjQJ1Oeh2QPww8Ky0zBY8nlxFgVqhArco10ztMGXg/exec"; // sửa WEB_APP_ID
 
-    if (!id) {
-      document.getElementById("status").innerText = "❌ Thiếu ID";
-    } else {
-      // 🔴 DÁN URL WEB APP CỦA BẠN VÀO ĐÂY
-      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmor-6GTvwsxug6ePq741esxa7RDO5_86EqJ6svn1PytSOnm6DeeD9hJfd2_On7YWrqQ/exec";
-
-      fetch(`${SCRIPT_URL}?id=${encodeURIComponent(id)}`)
-        .then(res => res.text())
-        .then(text => {
-          document.getElementById("status").innerText = text;
-        })
-        .catch(err => {
-          document.getElementById("status").innerText = "❌ Lỗi ghi log";
-          console.error(err);
-        });
-    }
-  </script>
-</b
+if (!id) {
+  document.getElementById("status").innerText = "❌ Thiếu ID NFC";
+} else {
+  fetch(`${GAS_URL}?id=${encodeURIComponent(id)}&source=nfc`)
+    .then(r => r.json())
+    .then(res => {
+      document.getElementById("status").innerText = res.message;
+      if (res.ten_toa) {
+        document.getElementById("info").innerHTML = `
+          🏢 <b>Tòa:</b> ${res.ten_toa}<br>
+          📍 <b>Quận:</b> ${res.quan}<br>
+          🧱 <b>Tầng:</b> ${res.tang}
+        `;
+      }
+    })
+    .catch(() => {
+      document.getElementById("status").innerText = "❌ Lỗi kết nối";
+    });
+}
+</script>
