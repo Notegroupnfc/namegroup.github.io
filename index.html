@@ -18,7 +18,7 @@ body { font-family: Arial, sans-serif; margin: 20px; }
 <script>
 const params = new URLSearchParams(location.search);
 const id = params.get("id");
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwyNJIdKLJaBCXR94Eu4lDgnU0kQuG3J7Z7Kb0NT1MBW5YhpLTcscCAHujrrC1JZ5CS3A/exec"; // Web App URL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxeNV7VFvOrzspnaZYCGExFl7jsJ9-VM_MKRVjCJzgQ-8D_zH_ytRy3UsTSbTvjzysqTw/exec"; // URL Web App /exec
 
 if (!id) {
   document.getElementById("status").innerText = "❌ Thiếu ID NFC";
@@ -36,7 +36,7 @@ if (!id) {
     // Tự mở link đúng sau 1s
     setTimeout(() => {
       if (res.link) window.location.href = res.link;
-    }, 1000);
+    }, 1000); // 1s
   })
   .catch(() => {
     document.getElementById("status").innerText = "❌ Lỗi kết nối";
