@@ -7,20 +7,18 @@
     body { font-family: Arial, sans-serif; margin: 20px; }
     #info { margin-top: 15px; font-size: 18px; }
     #status { font-weight: bold; }
-    #link { margin-top: 10px; color: blue; }
   </style>
 </head>
 <body>
   <h2>NFC Quét Log</h2>
   <div id="status">Đang quét...</div>
   <div id="info"></div>
-  <div id="link"></div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
-    const id = params.get("id"); // Lấy ID từ URL
+    const id = params.get("id");
 
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzO5ju0qv8vTdwilUjGDtmwH0HSBS9TozQ1Io-WhHGDUYHHVPIk0IVTUfx7NAF4c2kLKA/exec"; // Web App URL
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzukfVS7goHAeAfr12_7HfXCmIIDGLAPENKDhPlnBoFYrhYNw_bz8kUsEUgJD6yU0Rmkg/exec";
 
     if (!id) {
       document.getElementById("status").innerText = "❌ Thiếu ID NFC";
@@ -28,20 +26,16 @@
       fetch(`${GAS_URL}?id=${encodeURIComponent(id)}&source=nfc`)
         .then(r => r.json())
         .then(res => {
-          // Hiển thị thông tin
           document.getElementById("status").innerText = res.message;
           if (res.ten_toa) {
             document.getElementById("info").innerHTML = `
               🏢 <b>Tòa:</b> ${res.ten_toa}<br>
               📍 <b>Quận:</b> ${res.quan}<br>
-              🧱 <b>Tầng:</b> ${res.tang}
+              🧱 <b>Tầng:</b> ${res.tang}<br>
+              🔗 <b>Link NFC:</b> ${res.link}
             `;
-            // Hiển thị link đúng
-            document.getElementById("link").innerHTML = `<a href="${res.link}" target="_blank">🔗 Link NFC</a>`;
-
-            // Tự động mở link sau 3s
             setTimeout(() => {
-              window.location.href = res.link;
+              if (res.link) window.location.href = res.link; // tự mở link chính xác
             }, 3000);
           }
         })
