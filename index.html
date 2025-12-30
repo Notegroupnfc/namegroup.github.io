@@ -3,18 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>NFC Quét Log</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #info { margin-top: 15px; font-size: 18px; }
+    #status { font-weight: bold; }
+  </style>
 </head>
 <body>
   <h2>NFC Quét Log</h2>
-  <div id="status">Đang chờ quét...</div>
+  <div id="status">Đang quét...</div>
   <div id="info"></div>
-  <div id="link"></div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id"); // Lấy ID từ URL
 
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzcvCWgBFB_o9xf3-Ul1g0OgIMIS-T2NcWHIGdJX9f_kmy16MnS1GZYya9-6FHHpfAtGw/exec"; // Web App URL
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzxCThfcwMz1NuiO_vb-d4gV81WgSqIimve6Juq1U0Vo7_4PDlJ6uWhqjiuE5rWPdtAPg/exec"; // Web App URL
 
     if (!id) {
       document.getElementById("status").innerText = "❌ Thiếu ID NFC";
@@ -22,6 +26,7 @@
       fetch(`${GAS_URL}?id=${encodeURIComponent(id)}&source=nfc`)
         .then(r => r.json())
         .then(res => {
+          // Hiển thị thông tin tạm thời
           document.getElementById("status").innerText = res.message;
           if (res.ten_toa) {
             document.getElementById("info").innerHTML = `
@@ -29,7 +34,13 @@
               📍 <b>Quận:</b> ${res.quan}<br>
               🧱 <b>Tầng:</b> ${res.tang}
             `;
-            document.getElementById("link").innerHTML = `<a href="${res.link}" target="_blank">🔗 Mở link NFC</a>`;
+
+            // Tự động mở link sau 3 giây
+            setTimeout(() => {
+              if (res.link) {
+                window.location.href = res.link;
+              }
+            }, 3000); // 3000ms = 3 giây
           }
         })
         .catch(() => document.getElementById("status").innerText = "❌ Lỗi kết nối");
